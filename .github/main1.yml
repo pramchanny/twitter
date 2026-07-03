@@ -1,0 +1,74 @@
+name: X1
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 1 * * *"
+permissions:
+  contents: write
+
+jobs:
+  run-seleniumbase:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout public repo (vath414X)
+      - name: Checkout public repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: true
+
+      # 2️⃣ Checkout private repo (Cookies)
+      - name: Checkout private repo (Cookies)
+        uses: actions/checkout@v4
+        with:
+          repository: pramchanny/cookies # <- replace yourusername with your GitHub username
+          token: ${{ secrets.PRIVATE_REPO_TOKEN }}
+          path: private_data # folder in workflow runner
+
+      # 3️⃣ Cache pip packages
+      - name: Cache pip packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      # 4️⃣ Setup Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # 5️⃣ Install dependencies
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install seleniumbase undetected-chromedriver requests
+
+      # 6️⃣ Run SeleniumBase script
+      - name: Run SeleniumBase script
+        run: python main1.py
+
+      - name: Send screenshot to Telegram
+        if: always()
+        run: |
+          if [ -f debug.png ]; then
+            curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendPhoto" \
+              -F chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+              -F photo=@debug.png \
+              -F caption="✅ X1 Run — $(date '+%Y-%m-%d %H:%M UTC')"
+          else
+            curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+              -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+              -d text="⚠️ X1 Run — debug.png not found ($(date '+%Y-%m-%d %H:%M UTC'))"
+          fi
+
+      # 8️⃣ Upload screenshots (keep as backup)
+      - name: Upload screenshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-screenshot
+          path: debug.png
