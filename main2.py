@@ -4,5 +4,5 @@ import random, time
 if __name__ == "__main__":
     # Only setup driver if selected
     driver = setup("MattWijoy338")
-    smooth_scroll(driver)
-    # work(driver,"SecretMindX3853")
+    # smooth_scroll(driver)
+    work(driver)

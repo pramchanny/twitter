@@ -1,4 +1,4 @@
-name: X12
+name: X11
 
 on:
   workflow_dispatch:
@@ -50,7 +50,7 @@ jobs:
 
       # 6️⃣ Run SeleniumBase script
       - name: Run SeleniumBase script
-        run: python main12.py
+        run: python main11.py
 
       # 7️⃣ Upload screenshots
       - name: Send screenshot to Telegram
@@ -60,11 +60,11 @@ jobs:
             curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendPhoto" \
               -F chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
               -F photo=@debug.png \
-              -F caption="✅ X12 Run — $(date '+%Y-%m-%d %H:%M UTC')"
+              -F caption="✅ X11 Run — $(date '+%Y-%m-%d %H:%M UTC')"
           else
             curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
               -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
-              -d text="⚠️ X12 Run — debug.png not found ($(date '+%Y-%m-%d %H:%M UTC'))"
+              -d text="⚠️ X11 Run — debug.png not found ($(date '+%Y-%m-%d %H:%M UTC'))"
           fi
 
       # 8️⃣ Upload screenshots (keep as backup)
