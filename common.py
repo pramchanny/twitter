@@ -345,7 +345,7 @@ def dismiss_modal_if_present(driver):
         pass
 def work(driver,*args):
     if not args:
-        url="https://x.com/Viviwie6c"
+        url="https://x.com/AngeTjand936"
     else:
         for item in args:
             url=item
